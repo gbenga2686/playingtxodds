@@ -1,2 +1,28 @@
+# Core dependencies
 Flask==3.0.2
-Werkzeug==3.0.1 
+Werkzeug==3.0.1
+gunicorn==21.2.0
+
+# Security
+python-dotenv==1.0.1
+cryptography==41.0.7
+
+# Monitoring and metrics
+prometheus-client==0.19.0
+prometheus-flask-exporter==0.22.4
+
+# Testing
+pytest==7.4.4
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+coverage==7.4.1
+
+# Development
+black==23.12.1
+flake8==7.0.0
+mypy==1.8.0
+isort==5.13.2
+
+# Type checking
+types-Werkzeug==1.0.9
+types-requests==2.31.0.20240218 

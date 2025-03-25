@@ -1,5 +1,9 @@
-from flask import Flask, request, escape
+
+from flask import Flask, request
+from markupsafe import escape
 from werkzeug.exceptions import HTTPException
+
+
 
 app = Flask(__name__)
 

@@ -1,25 +1,40 @@
 FROM python:3.12-slim AS builder
 
-# Set the working directory
 WORKDIR /app
 
-# Create a non-root user
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    python3-dev \
+    libffi-dev \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first to leverage Docker cache
 COPY requirements.txt .
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copy the application files
+FROM python:3.12-slim
+
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+WORKDIR /app
+
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
 COPY app.py .
 
-# Switch to non-root user
 USER appuser
 
-# Expose the port the app runs on
+RUN mkdir -p /tmp/app && chown -R appuser:appuser /tmp/app
+ENV TMPDIR=/tmp/app
+
 EXPOSE 5000
 
-# Command to run the application
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost:5000/ || exit 1
+
 CMD ["python", "app.py"]
